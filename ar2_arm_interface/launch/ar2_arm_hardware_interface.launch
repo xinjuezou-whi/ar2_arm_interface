@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>  
+  <!-- params -->
+  <rosparam file="$(find ar2_arm_interface)/config/hardware_ar2.yaml" command="load"/>
+  <rosparam file="$(find ar2_arm_interface)/config/controllers_ar2.yaml" command="load"/>
+  <rosparam file="$(find ar2_arm_interface)/config/joint_offsets_ar2.yaml" command="load"/>
+
+  <!-- Load moveit joint limits config in separate namespace to get velocity limits -->
+  <rosparam file="$(find ar3_moveit_config)/config/joint_limits.yaml" command="load" ns="ar3"/>
+
+  <!-- Load universal robot description format (URDF) -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar3_description)/urdf/ar3.urdf.xacro"/>
+
+  <!-- The semantic description that corresponds to the URDF -->
+  <param name="robot_description_semantic" textfile="$(find ar3_moveit_config)/config/ar3.srdf" />
+
+  <!-- Start hardware_interface node -->
+  <node name="ar2_arm_interface" pkg="ar2_arm_interface" type="ar2_arm_interface_node" output="screen"/>
+
+  <!-- Start controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/" 
+        args="/ar2_arm/controllers/state
+	          /ar2_arm/controllers/position"/>
+</launch>
