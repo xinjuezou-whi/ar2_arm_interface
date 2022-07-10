@@ -8,3 +8,9 @@ ar2_arm:
       - joint_4
       - joint_5
       - joint_6
+    hardware: 'rosserial'
+    rosserial:
+      topic: '/arm_hardware_interface'
+    serial:
+      port: '/dev/ttyACM0'
+      baudrate: 57600
