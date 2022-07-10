@@ -24,12 +24,30 @@
     <ClCompile Include="src\sdk\ar2_arm_hardware.cpp">
       <Filter>src\sdk</Filter>
     </ClCompile>
+    <ClCompile Include="src\sdk\driver_serial.cpp">
+      <Filter>src\sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sdk\driver_rosserial.cpp">
+      <Filter>src\sdk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ar2_arm_interface\whi_arm_hardware_base.h">
       <Filter>include\ar2_arm_interface</Filter>
     </ClInclude>
     <ClInclude Include="include\ar2_arm_interface\ar2_arm_hardware.h">
+      <Filter>include\ar2_arm_interface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ar2_arm_interface\driver_serial.h">
+      <Filter>include\ar2_arm_interface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ar2_arm_interface\driver_base.h">
+      <Filter>include\ar2_arm_interface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ar2_arm_interface\rotary_encoder_base.h">
+      <Filter>include\ar2_arm_interface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ar2_arm_interface\driver_rosserial.h">
       <Filter>include\ar2_arm_interface</Filter>
     </ClInclude>
   </ItemGroup>

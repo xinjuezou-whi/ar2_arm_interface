@@ -16,6 +16,8 @@ Changelog:
 2022-xx-xx: xxx
 ******************************************************************/
 #pragma once
+#include "driver_base.h"
+
 #include <ros/ros.h>
 #include <hardware_interface/robot_hw.h>
 #include <hardware_interface/joint_state_interface.h>
@@ -30,6 +32,10 @@ namespace whi_arm_hardware_interface
 	/// brief Hardware interface for a robot
 	class ArmHardware : public hardware_interface::RobotHW
 	{
+	public:
+		enum Hardware { I2C = 0, CAN_BUS, SERIAL, ROSSERIAL, HARDWARE_SUM };
+		static const char* hardware[HARDWARE_SUM];
+
 	public:
 		ArmHardware() = delete;
 		ArmHardware(std::shared_ptr<ros::NodeHandle>& NodeHandle);
@@ -64,5 +70,8 @@ namespace whi_arm_hardware_interface
 
 		/// controller manager
 		std::unique_ptr<controller_manager::ControllerManager> controller_manager_{ nullptr };
+
+		// driver
+		std::map<std::string, std::unique_ptr<DriverBase>> drivers_map_;
 	};
 }

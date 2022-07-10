@@ -13,6 +13,12 @@ All text above must be included in any redistribution.
 
 ******************************************************************/
 #include "ar2_arm_interface/ar2_arm_hardware.h"
+#include "ar2_arm_interface/driver_serial.h"
+#include "ar2_arm_interface/driver_rosserial.h"
+
+#include <angles/angles.h>
+#include <std_msgs/String.h>
+#include <thread>
 
 namespace whi_arm_hardware_interface
 {
@@ -39,6 +45,56 @@ namespace whi_arm_hardware_interface
             }
             sum.pop_back();
             ROS_WARN((std::string("No joints found on parameter server for controller. Name them with:\n") + sum).c_str());
+        }
+        for (std::size_t i = 0; i < joint_names_.size(); ++i)
+        {
+            // A B C D E F...
+            axes_prefix_.push_back(char(65 + i));
+        }
+        deg_per_steps_.push_back(447);
+        deg_per_steps_.push_back(553);
+        deg_per_steps_.push_back(560);
+        deg_per_steps_.push_back(460);
+        deg_per_steps_.push_back(217);
+        deg_per_steps_.push_back(213);
+
+        // drivers
+        std::string hardwareStr;
+        node_handle_->param("/ar2_arm/hardware_interface/hardware", hardwareStr, std::string(hardware[ROSSERIAL]));
+        if (hardwareStr == hardware[ROSSERIAL])
+        {
+            std::string topic;
+            node_handle_->param("/ar2_arm/hardware_interface/rosserial/topic", topic, std::string("/arm_hardware_interface"));
+            drivers_map_.emplace(name_, std::make_unique<DriverRosserial>(name_, node_handle_, topic));
+        }
+        else if (hardwareStr == hardware[SERIAL])
+        {
+            // currently AR2's arduino accept single combined command,
+            // therefore init one serial instance
+            std::string port;
+            int baudrate = -1;
+            if (node_handle_->param("/ar2_arm/hardware_interface/serial/port", port, std::string()) &&
+                node_handle_->param("/ar2_arm/hardware_interface/serial/baudrate", baudrate, -1))
+            {
+                try
+                {
+                    name_ = "mega2560";
+                    auto serialInst = std::make_shared<serial::Serial>(port, baudrate, serial::Timeout::simpleTimeout(500));
+                    drivers_map_.emplace(name_, std::make_unique<DriverSerial>(name_, serialInst));
+                }
+                catch (serial::IOException& e)
+                {
+                    ROS_FATAL_STREAM_NAMED("failed to open serial %s", port.c_str());
+                }
+            }
+            else
+            {
+                ROS_FATAL_NAMED("failed to get serial params %s, %d", port.c_str(), baudrate);
+            }
+        }
+        else
+        {
+            ROS_FATAL_STREAM_NAMED("failed to init driver of %s", hardwareStr.c_str());
         }
 
         // resize vectors
@@ -82,11 +138,34 @@ namespace whi_arm_hardware_interface
 
     void Ar2HardwareInterface::read()
     {
-
+        // do nothing
     }
 
     void Ar2HardwareInterface::write(ros::Duration ElapsedTime)
     {
+        /// rosserial
+        std::string cmd("MJ");
+        for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
+        {
+            double degCmd = angles::to_degrees(joint_position_command_[i]);
+            double degPre = angles::to_degrees(joint_position_[i]);
+            int step = int((degCmd - degPre) * deg_per_steps_[i]);
+            // TODO: get the direction
+            cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "0" : "1") + std::to_string(step));
+        }
+        // TODO: get the speed acc dcc
+        cmd.append("S25G15H10I20K5");
 
+        drivers_map_[name_]->actuate(cmd);
+
+#ifndef DEBUG
+        std::cout << "cmd " << cmd << std::endl;
+#endif
+
+        // update current to command
+        for (std::size_t i = 0; i < joint_position_.size(); ++i)
+        {
+            joint_position_[i] = joint_position_command_[i];
+        }
     }
 }

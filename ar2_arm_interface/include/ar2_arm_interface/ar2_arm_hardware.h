@@ -18,6 +18,8 @@ Changelog:
 #pragma once
 #include "whi_arm_hardware_base.h"
 
+#include <serial/serial.h>
+
 namespace whi_arm_hardware_interface
 {
     class Ar2HardwareInterface : public ArmHardware
@@ -31,5 +33,10 @@ namespace whi_arm_hardware_interface
         void update(const ros::TimerEvent& Event);
         void read();
         void write(ros::Duration ElapsedTime);
+
+    protected:
+        std::string name_;
+        std::vector<char> axes_prefix_;
+        std::vector<int> deg_per_steps_;
     };
 }
