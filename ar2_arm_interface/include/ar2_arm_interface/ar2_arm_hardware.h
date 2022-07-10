@@ -35,7 +35,7 @@ namespace whi_arm_hardware_interface
         void write(ros::Duration ElapsedTime);
 
     protected:
-        std::string name_;
+        const std::string name_{ "mega2560" };
         std::vector<char> axes_prefix_;
         std::vector<int> deg_per_steps_;
     };

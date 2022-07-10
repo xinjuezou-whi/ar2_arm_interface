@@ -78,7 +78,6 @@ namespace whi_arm_hardware_interface
             {
                 try
                 {
-                    name_ = "mega2560";
                     auto serialInst = std::make_shared<serial::Serial>(port, baudrate, serial::Timeout::simpleTimeout(500));
                     drivers_map_.emplace(name_, std::make_unique<DriverSerial>(name_, serialInst));
                 }
@@ -157,7 +156,6 @@ namespace whi_arm_hardware_interface
         cmd.append("S25G15H10I20K5");
 
         drivers_map_[name_]->actuate(cmd);
-
 #ifndef DEBUG
         std::cout << "cmd " << cmd << std::endl;
 #endif
