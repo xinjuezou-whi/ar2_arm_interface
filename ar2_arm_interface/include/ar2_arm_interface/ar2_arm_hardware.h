@@ -37,6 +37,11 @@ namespace whi_arm_hardware_interface
     protected:
         const std::string name_{ "mega2560" };
         std::vector<char> axes_prefix_;
-        std::vector<int> deg_per_steps_;
+        std::vector<double> steps_per_deg_;
+        int speed_rate_{ 25 };
+        int acc_duration_{ 15 };
+        int acc_rate_{ 10 };
+        int dec_duration_{ 20 };
+        int dec_rate_{ 5 };
     };
 }

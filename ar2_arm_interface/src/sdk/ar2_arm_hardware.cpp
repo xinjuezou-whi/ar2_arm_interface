@@ -46,17 +46,17 @@ namespace whi_arm_hardware_interface
             sum.pop_back();
             ROS_WARN((std::string("No joints found on parameter server for controller. Name them with:\n") + sum).c_str());
         }
+        node_handle_->getParam("/ar2_arm/hardware_interface/steps_per_degree/", steps_per_deg_);
         for (std::size_t i = 0; i < joint_names_.size(); ++i)
         {
             // A B C D E F...
             axes_prefix_.push_back(char(65 + i));
         }
-        deg_per_steps_.push_back(447);
-        deg_per_steps_.push_back(553);
-        deg_per_steps_.push_back(560);
-        deg_per_steps_.push_back(460);
-        deg_per_steps_.push_back(217);
-        deg_per_steps_.push_back(213);
+        node_handle_->param("/ar2_arm/hardware_interface/speed_rate", speed_rate_, 25);
+        node_handle_->param("/ar2_arm/hardware_interface/acc_duration", acc_duration_, 15);
+        node_handle_->param("/ar2_arm/hardware_interface/acc_rate", acc_rate_, 10);
+        node_handle_->param("/ar2_arm/hardware_interface/dec_duration", dec_duration_, 20);
+        node_handle_->param("/ar2_arm/hardware_interface/dec_rate", dec_rate_, 5);
 
         // drivers
         std::string hardwareStr;
@@ -148,16 +148,16 @@ namespace whi_arm_hardware_interface
         {
             double degCmd = angles::to_degrees(joint_position_command_[i]);
             double degPre = angles::to_degrees(joint_position_[i]);
-            int step = int((degCmd - degPre) * deg_per_steps_[i]);
-            // TODO: get the direction
-            cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "0" : "1") + std::to_string(step));
+            int step = int((degCmd - degPre) * steps_per_deg_[i]);
+            cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
         }
-        // TODO: get the speed acc dcc
-        cmd.append("S25G15H10I20K5");
+        cmd.append(std::string("S") + std::to_string(speed_rate_) +
+            "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) + 
+            "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
 
         drivers_map_[name_]->actuate(cmd);
-#ifndef DEBUG
-        std::cout << "cmd " << cmd << std::endl;
+#ifdef DEBUG
+        std::cout << "arduino cmd " << cmd << std::endl;
 #endif
 
         // update current to command
