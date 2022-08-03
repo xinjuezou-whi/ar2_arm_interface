@@ -9,6 +9,7 @@ ar2_arm:
       - joint_5
       - joint_6
     steps_per_degree: [44.705882, 55.303030, 56.071429, 46.060606, 21.785714, 21.370968]
+    home_offsets: [140, 45, -135, 90, 90, -45]
     speed_rate: 25
     acc_duration: 15
     acc_rate: 10

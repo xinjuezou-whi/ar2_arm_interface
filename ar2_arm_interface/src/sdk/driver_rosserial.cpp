@@ -17,11 +17,11 @@ All text above must be included in any redistribution.
 ******************************************************************/
 #include "ar2_arm_interface/driver_rosserial.h"
 
-#include <std_msgs/String.h>
-
 DriverRosserial::DriverRosserial(const std::string& JointName, std::shared_ptr<ros::NodeHandle> NodeHandle, std::string Topic)
 	: DriverBase(JointName)
-	, pub_(std::make_unique<ros::Publisher>(NodeHandle->advertise<std_msgs::String>(Topic, 10))) {}
+	, pub_(std::make_unique<ros::Publisher>(NodeHandle->advertise<std_msgs::String>(Topic, 1)))
+	, sub_(std::make_unique<ros::Subscriber>(NodeHandle->subscribe<std_msgs::String>("arm_hardware_response", 1,
+		std::bind(&DriverRosserial::callbackResponseMsg, this, std::placeholders::_1)))) {}
 
 DriverRosserial::~DriverRosserial()
 {
@@ -62,7 +62,22 @@ void DriverRosserial::setEncoder(unsigned int Resolution)
 
 }
 
+void DriverRosserial::registerResponse(ResponseFunc Func)
+{
+	responseCallback_ = Func;
+}
+
 void DriverRosserial::resetEnc()
 {
 
+}
+
+void DriverRosserial::callbackResponseMsg(const std_msgs::String::ConstPtr& Msg)
+{
+	std::string response(Msg->data);
+
+	if (responseCallback_)
+	{
+		responseCallback_(Msg->data);
+	}
 }

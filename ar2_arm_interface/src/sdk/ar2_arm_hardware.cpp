@@ -32,6 +32,10 @@ namespace whi_arm_hardware_interface
 
     void Ar2HardwareInterface::init()
     {
+        bool toHome;
+        node_handle_->param("home", toHome, false);
+        homing_state_ = toHome ? STA_TO_HOME : STA_HOMED;
+
         // joints
         node_handle_->getParam("/ar2_arm/hardware_interface/joints", joint_names_);
         if (joint_names_.size() == 0)
@@ -47,6 +51,7 @@ namespace whi_arm_hardware_interface
             ROS_WARN((std::string("No joints found on parameter server for controller. Name them with:\n") + sum).c_str());
         }
         node_handle_->getParam("/ar2_arm/hardware_interface/steps_per_degree/", steps_per_deg_);
+        node_handle_->getParam("/ar2_arm/hardware_interface/home_offsets/", home_offsets_);
         for (std::size_t i = 0; i < joint_names_.size(); ++i)
         {
             // A B C D E F...
@@ -66,6 +71,7 @@ namespace whi_arm_hardware_interface
             std::string topic;
             node_handle_->param("/ar2_arm/hardware_interface/rosserial/topic", topic, std::string("/arm_hardware_interface"));
             drivers_map_.emplace(name_, std::make_unique<DriverRosserial>(name_, node_handle_, topic));
+            ((DriverRosserial*)drivers_map_[name_].get())->registerResponse(std::bind(&Ar2HardwareInterface::callbackResponse, this, std::placeholders::_1));
         }
         else if (hardwareStr == hardware[SERIAL])
         {
@@ -143,27 +149,59 @@ namespace whi_arm_hardware_interface
     void Ar2HardwareInterface::write(ros::Duration ElapsedTime)
     {
         /// rosserial
-        std::string cmd("MJ");
-        for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
+        if (homing_state_ == STA_HOMED)
         {
-            double degCmd = angles::to_degrees(joint_position_command_[i]);
-            double degPre = angles::to_degrees(joint_position_[i]);
-            int step = int((degCmd - degPre) * steps_per_deg_[i]);
-            cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
-        }
-        cmd.append(std::string("S") + std::to_string(speed_rate_) +
-            "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) + 
-            "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
+            std::string cmd("MJ");
+            for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
+            {
+                double degCmd = angles::to_degrees(joint_position_command_[i]);
+                double degPre = angles::to_degrees(joint_position_[i]);
+                int step = int((degCmd - degPre) * steps_per_deg_[i]);
+                cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
+            }
+            cmd.append(std::string("S") + std::to_string(speed_rate_) +
+                "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) +
+                "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
 
-        drivers_map_[name_]->actuate(cmd);
+            drivers_map_[name_]->actuate(cmd);
 #ifdef DEBUG
-        std::cout << "arduino cmd " << cmd << std::endl;
+            std::cout << "arduino cmd " << cmd << std::endl;
 #endif
 
-        // update current to command
-        for (std::size_t i = 0; i < joint_position_.size(); ++i)
+            // update current to command
+            for (std::size_t i = 0; i < joint_position_.size(); ++i)
+            {
+                joint_position_[i] = joint_position_command_[i];
+            }
+        }
+        else if (homing_state_ == STA_TO_HOME)
         {
-            joint_position_[i] = joint_position_command_[i];
+            std::string cmd("hm");
+            for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
+            {
+                int step = int(home_offsets_[i] * steps_per_deg_[i]);
+                cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
+            }
+            cmd.append(std::string("S") + std::to_string(speed_rate_) +
+                "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) +
+                "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
+
+            drivers_map_[name_]->actuate(cmd);
+#ifdef DEBUG
+            std::cout << "arduino cmd " << cmd << std::endl;
+#endif
+        }
+    }
+
+    void Ar2HardwareInterface::callbackResponse(const std::string& State)
+    {
+        if (State.find("homing") != std::string::npos)
+        {
+            homing_state_ = STA_HOMING;
+        }
+        else if (State.find("homed") != std::string::npos)
+        {
+            homing_state_ = STA_HOMED;
         }
     }
 }

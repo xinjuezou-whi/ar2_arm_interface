@@ -35,9 +35,17 @@ namespace whi_arm_hardware_interface
         void write(ros::Duration ElapsedTime);
 
     protected:
+        void callbackResponse(const std::string& State);
+
+    protected:
+        enum HomingState { STA_TO_HOME = 0, STA_HOMING, STA_HOMED };
+
+    protected:
         const std::string name_{ "mega2560" };
         std::vector<char> axes_prefix_;
         std::vector<double> steps_per_deg_;
+        std::vector<double> home_offsets_;
+        int homing_state_{ STA_HOMED };
         int speed_rate_{ 25 };
         int acc_duration_{ 15 };
         int acc_rate_{ 10 };
