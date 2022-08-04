@@ -45,6 +45,7 @@ namespace whi_arm_hardware_interface
         std::vector<char> axes_prefix_;
         std::vector<double> steps_per_deg_;
         std::vector<double> home_offsets_;
+        std::vector<double> home_kinematics_;
         int homing_state_{ STA_HOMED };
         int speed_rate_{ 25 };
         int acc_duration_{ 15 };

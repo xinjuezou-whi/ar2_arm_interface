@@ -52,6 +52,7 @@ namespace whi_arm_hardware_interface
         }
         node_handle_->getParam("/ar2_arm/hardware_interface/steps_per_degree/", steps_per_deg_);
         node_handle_->getParam("/ar2_arm/hardware_interface/home_offsets/", home_offsets_);
+        node_handle_->getParam("/ar2_arm/hardware_interface/home_kinematics/", home_kinematics_);
         for (std::size_t i = 0; i < joint_names_.size(); ++i)
         {
             // A B C D E F...
@@ -182,9 +183,9 @@ namespace whi_arm_hardware_interface
                 int step = int(home_offsets_[i] * steps_per_deg_[i]);
                 cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
             }
-            cmd.append(std::string("S") + std::to_string(speed_rate_) +
-                "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) +
-                "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
+            cmd.append(std::string("S") + std::to_string(home_kinematics_[0]) +
+                "G" + std::to_string(home_kinematics_[1]) + "H" + std::to_string(home_kinematics_[2]) +
+                "I" + std::to_string(home_kinematics_[3]) + "K" + std::to_string(home_kinematics_[4]));
 
             drivers_map_[name_]->actuate(cmd);
 #ifdef DEBUG

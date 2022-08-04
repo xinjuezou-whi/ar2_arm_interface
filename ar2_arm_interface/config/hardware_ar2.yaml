@@ -1,6 +1,6 @@
 ar2_arm:
   hardware_interface:
-    loop_hz: 20 # hz
+    loop_hz: 1 # hz
     joints:
       - joint_1
       - joint_2
@@ -9,15 +9,16 @@ ar2_arm:
       - joint_5
       - joint_6
     steps_per_degree: [44.705882, 55.303030, 56.071429, 46.060606, 21.785714, 21.370968]
-    home_offsets: [140, 45, -135, 90, 90, -45]
-    speed_rate: 25
-    acc_duration: 15
-    acc_rate: 10
-    dec_duration: 20
-    dec_rate: 5
+    home_offsets: [160, 41, -149, 76, 91.5, -163]
+    home_kinematics: [30, 5, 25, 5, 25] # order speed_rate-acc_dur-acc_rate-dcc_dur-dcc_rate
+    speed_rate: 30 #25
+    acc_duration: 5 #15
+    acc_rate: 25 #10
+    dec_duration: 5 #20
+    dec_rate: 25 #5
     hardware: 'rosserial'
     rosserial:
       topic: '/arm_hardware_interface'
     serial:
       port: '/dev/ttyACM0'
-      baudrate: 57600
+      baudrate: 115200
