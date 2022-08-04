@@ -44,6 +44,7 @@ namespace whi_arm_hardware_interface
         const std::string name_{ "mega2560" };
         std::vector<char> axes_prefix_;
         std::vector<double> steps_per_deg_;
+        std::vector<int> forward_dir_;
         std::vector<double> home_offsets_;
         std::vector<double> home_kinematics_;
         int homing_state_{ STA_HOMED };

@@ -51,6 +51,7 @@ namespace whi_arm_hardware_interface
             ROS_WARN((std::string("No joints found on parameter server for controller. Name them with:\n") + sum).c_str());
         }
         node_handle_->getParam("/ar2_arm/hardware_interface/steps_per_degree/", steps_per_deg_);
+        node_handle_->getParam("/ar2_arm/hardware_interface/forward_dir/", forward_dir_);
         node_handle_->getParam("/ar2_arm/hardware_interface/home_offsets/", home_offsets_);
         node_handle_->getParam("/ar2_arm/hardware_interface/home_kinematics/", home_kinematics_);
         for (std::size_t i = 0; i < joint_names_.size(); ++i)
@@ -157,7 +158,7 @@ namespace whi_arm_hardware_interface
             {
                 double degCmd = angles::to_degrees(joint_position_command_[i]);
                 double degPre = angles::to_degrees(joint_position_[i]);
-                int step = int((degCmd - degPre) * steps_per_deg_[i]);
+                int step = int((degCmd - degPre) * steps_per_deg_[i]) * forward_dir_[i];
                 cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
             }
             cmd.append(std::string("S") + std::to_string(speed_rate_) +

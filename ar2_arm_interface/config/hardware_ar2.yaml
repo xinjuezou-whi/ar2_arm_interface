@@ -1,6 +1,6 @@
 ar2_arm:
   hardware_interface:
-    loop_hz: 1 # hz
+    loop_hz: 3 # hz
     joints:
       - joint_1
       - joint_2
@@ -9,7 +9,8 @@ ar2_arm:
       - joint_5
       - joint_6
     steps_per_degree: [44.705882, 55.303030, 56.071429, 46.060606, 21.785714, 21.370968]
-    home_offsets: [160, 41, -149, 76, 91.5, -163]
+    forward_dir: [1, 1, 1, -1, 1, 1]
+    home_offsets: [160, 41, -149, -76, 91.5, -163]
     home_kinematics: [30, 5, 25, 5, 25] # order speed_rate-acc_dur-acc_rate-dcc_dur-dcc_rate
     speed_rate: 30 #25
     acc_duration: 5 #15
