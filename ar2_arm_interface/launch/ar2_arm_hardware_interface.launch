@@ -2,8 +2,7 @@
 <launch>
   <!-- argument -->
   <arg name="home" default="false"/>
-  <param name="home" type="bool" value="true" if="$(arg home)"/>
-  <param name="home" type="bool" value="false" unless="$(arg home)"/>
+  <arg name="close_loop" default="true"/>
 
   <!-- params -->
   <rosparam file="$(find ar2_arm_interface)/config/hardware_ar2.yaml" command="load"/>
@@ -17,15 +16,20 @@
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar3_description)/urdf/ar3.urdf.xacro"/>
 
   <!-- The semantic description that corresponds to the URDF -->
-  <param name="robot_description_semantic" textfile="$(find ar3_moveit_config)/config/ar3.srdf" />
+  <param name="robot_description_semantic" textfile="$(find ar3_moveit_config)/config/ar3.srdf"/>
 
   <!-- Start hardware_interface node -->
-  <node name="ar2_arm_interface" pkg="ar2_arm_interface" type="ar2_arm_interface_node" output="screen"/>
+  <node name="ar2_arm_interface" pkg="ar2_arm_interface" type="ar2_arm_interface_node" output="screen">
+    <param name="home" type="bool" value="true" if="$(arg home)"/>
+    <param name="home" type="bool" value="false" unless="$(arg home)"/>
+    <param name="close_loop" type="bool" value="true" if="$(arg close_loop)"/>
+    <param name="close_loop" type="bool" value="false" unless="$(arg close_loop)"/>
+  </node>
 
   <!-- rosserial server -->
   <node pkg="rosserial_python" name="serial_node" type="serial_node.py" output="screen">
     <param name="~port" value="/dev/ttyACM0"/>
-    <param name="~baud" value="57600"/>
+    <param name="~baud" value="115200"/>
   </node>
 
   <!-- Start controllers -->
