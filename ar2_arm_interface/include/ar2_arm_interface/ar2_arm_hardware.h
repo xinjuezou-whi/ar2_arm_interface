@@ -53,8 +53,6 @@ namespace whi_arm_hardware_interface
         int acc_rate_{ 10 };
         int dec_duration_{ 20 };
         int dec_rate_{ 5 };
-        std::vector<int> steps_sum_;
-        std::vector<bool> steps_completed_;
         bool mode_close_loop_{ true };
     };
 }

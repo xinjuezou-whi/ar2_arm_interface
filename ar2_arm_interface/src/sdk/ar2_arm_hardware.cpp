@@ -61,8 +61,6 @@ namespace whi_arm_hardware_interface
             // A B C D E F...
             axes_prefix_.push_back(char(65 + i));
         }
-        steps_sum_.resize(joint_names_.size());
-        steps_completed_.resize(joint_names_.size());
         node_handle_->param("/ar2_arm/hardware_interface/speed_rate", speed_rate_, 25);
         node_handle_->param("/ar2_arm/hardware_interface/acc_duration", acc_duration_, 15);
         node_handle_->param("/ar2_arm/hardware_interface/acc_rate", acc_rate_, 10);
@@ -157,63 +155,24 @@ namespace whi_arm_hardware_interface
         /// rosserial
         if (homing_state_ == STA_HOMED)
         {
-            if (mode_close_loop_)
+            std::string cmd("MJ");
+            for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
             {
-                std::string cmd("MJ");
-                for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
-                {
-                    double degCmd = angles::to_degrees(joint_position_command_[i]);
-                    double degPre = angles::to_degrees(joint_position_[i]);
-                    int step = int((degCmd - degPre) * steps_per_deg_[i]) * forward_dir_[i];
-                    cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
-                }
-                cmd.append(std::string("S") + std::to_string(speed_rate_) +
-                    "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) +
-                    "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
-
-                drivers_map_[name_]->actuate(cmd);
-#ifdef DEBUG
-                std::cout << "arduino cmd " << cmd << std::endl;
-#endif
+                double degCmd = angles::to_degrees(joint_position_command_[i]);
+                double degPre = angles::to_degrees(joint_position_[i]);
+                int step = int((degCmd - degPre) * steps_per_deg_[i]) * forward_dir_[i];
+                cmd.append(std::string(1, axes_prefix_[i]) + (step >= 0 ? "1" : "0") + std::to_string(abs(step)));
             }
-            else
+            cmd.append(std::string("S") + std::to_string(speed_rate_) +
+                "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) +
+                "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
+
+            drivers_map_[name_]->actuate(cmd);
+#ifdef DEBUG
+            std::cout << "arduino cmd " << cmd << std::endl;
+#endif
+            if (!mode_close_loop_)
             {
-                for (std::size_t i = 0; i < joint_position_command_.size(); ++i)
-                {
-                    double degCmd = angles::to_degrees(joint_position_command_[i]);
-                    double degPre = angles::to_degrees(joint_position_[i]);
-                    int step = int((degCmd - degPre) * steps_per_deg_[i]) * forward_dir_[i];
-
-                    steps_sum_[i] += step;
-                    steps_completed_[i] = step == 0 ? true : false;
-                }
-
-                std::size_t completed = 0;
-                for (const auto& it : steps_completed_)
-                {
-                    completed += it;
-                }
-                if (completed == steps_sum_.size())
-                {
-                    std::string cmd("MJ");
-                    for (std::size_t i = 0; i < steps_sum_.size(); ++i)
-                    {
-                        cmd.append(std::string(1, axes_prefix_[i]) + (steps_sum_[i] >= 0 ? "1" : "0") + std::to_string(abs(steps_sum_[i])));
-                    }
-                    cmd.append(std::string("S") + std::to_string(speed_rate_) +
-                        "G" + std::to_string(acc_duration_) + "H" + std::to_string(acc_rate_) +
-                        "I" + std::to_string(dec_duration_) + "K" + std::to_string(dec_rate_));
-                    drivers_map_[name_]->actuate(cmd);
-
-                    // clear step sum
-                    for (auto& it : steps_sum_)
-                    {
-                        it = 0;
-                }
-            }
-#ifdef DEBUG
-                std::cout << "arduino cmd " << cmd << std::endl;
-#endif
                 // update current to command
                 for (std::size_t i = 0; i < joint_position_.size(); ++i)
                 {
