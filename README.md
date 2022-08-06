@@ -40,24 +40,26 @@ The forked and modified repository can be found at the link:
 https://github.com/xinjuezou-whi/ar3_core
 
 ```
-cd <your_workspace>
+cd <your_workspace>/src
 git clone https://github.com/xinjuezou-whi/ar3_core.git
 ```
 
 3.	Clone ar2_hardware_interface
 
 ```
-cd <your_workspace>
+cd <your_workspace>/src
 git clone https://github.com/xinjuezou-whi/ar2_arm_interface.git
 ```
 
 4.	Build
 
 ```
+cd <your_workspace>
 catkin build
 ```
 or
 ```
+cd <your_workspace>
 catkin_make
 ```
 based on your environment setting
