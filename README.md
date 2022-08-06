@@ -88,6 +88,6 @@ Since AR2 takes step motors as its actuator, the home position cannot be memoriz
 cd <your_workspace>
 roslaunch ar3_moveit_config ar3_moveit_bringup.launch
 ```
-![image](https://user-images.githubusercontent.com/72239958/183247242-5e27947b-3d51-41aa-9e06-a02c56d89437.png)
+![ar2](https://user-images.githubusercontent.com/72239958/183247871-0b461c60-7794-4c48-bb19-d14dfafafe43.gif)
 
 While the MoveIt is running, the real-world arm can be controlled through Plan panel in RViz.
