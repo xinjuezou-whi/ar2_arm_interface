@@ -14,6 +14,14 @@ With a thorough refactor, it can catch up with the frequency of the hardware int
 ### Arm hardware interface: ar2_hardware_interface
 A bridge between Arduino controller and MoveIt. It follows the architect of ros_controller, and uses rosserial to set up the link with Arduino Mega2560.
 
+## Prerequisites
+Communication between arm hardware interface and Arduino Mega2560 relies on rosserial, please make sure it is installed.
+
+```
+sudo apt install ros-<ros_distro>-rosserial
+sudo apt install ros-<ros_distro>-rosserial-arduino
+```
+
 ## Buildup
 1.	Clone Arduino sketch and upload to Mega2560
 The repository can be found at the link:
