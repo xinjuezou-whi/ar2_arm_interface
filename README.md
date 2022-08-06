@@ -6,7 +6,7 @@ Thanks to [ANNIN](https://www.anninrobotics.com/home) with its open-source arm A
 
 ## Overview
 ### MoveIt config for AR2 arm: ar3_core
-I forked the repository “ar3_core” and made some adaptions like joint limits, pose group, and URDF to meet ar2.
+I forked the repository “ar3_core” and made some adaptions like joint limits, pose group, and URDF to meet AR2.
 
 ### Arduino controller: sketch_ar2_control
 With a thorough refactor, it can catch up with the frequency of the hardware interface by removing many logics that are redundant to MoveIt. Meanwhile, it keeps the “MJ” protocol as exact as before, which enables communication to “AR2.py” as well.
@@ -24,6 +24,7 @@ sudo apt install ros-<ros_distro>-rosserial-arduino
 
 ## Buildup
 1.	Clone Arduino sketch and upload to Mega2560
+
 The repository can be found at the link:
 https://github.com/xinjuezou-whi/Arduino-sketch_ar2_control
 
@@ -34,6 +35,7 @@ git clone https://github.com/xinjuezou-whi/Arduino-sketch_ar2_control.git
 compile and upload through Arduino IDE
 
 2.	Clone ar3_core
+
 The forked and modified repository can be found at the link:
 https://github.com/xinjuezou-whi/ar3_core
 
@@ -43,12 +45,14 @@ git clone https://github.com/xinjuezou-whi/ar3_core.git
 ```
 
 3.	Clone ar2_hardware_interface
+
 ```
 cd <your_workspace>
 git clone https://github.com/xinjuezou-whi/ar2_arm_interface.git
 ```
 
 4.	Build
+
 ```
 catkin build
 ```
