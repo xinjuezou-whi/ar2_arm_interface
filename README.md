@@ -110,4 +110,4 @@ roslaunch ar3_moveit_config ar3_moveit_bringup.launch
 ![ar2](https://user-images.githubusercontent.com/72239958/183279919-6fd584ec-95d5-4a90-b1b9-e25659e4c34a.gif)
 
 
-While the MoveIt is running, the real-world arm can be controlled through Plan panel in RViz.
+While the MoveIt is running, the real-world arm can be controlled through Planning panel in RViz.
