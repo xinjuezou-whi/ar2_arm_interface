@@ -62,7 +62,11 @@ or
 cd <your_workspace>
 catkin_make
 ```
-based on your environment setting
+based on your environment setting. And do not forget to source the bash
+
+```
+source <your_workspace>/devel/step.bash
+```
 
 ## Usage
 ### View the URDF in RViz
@@ -102,6 +106,8 @@ Since AR2 takes step motors as its actuator, the home position cannot be memoriz
 cd <your_workspace>
 roslaunch ar3_moveit_config ar3_moveit_bringup.launch
 ```
-![ar2](https://user-images.githubusercontent.com/72239958/183247871-0b461c60-7794-4c48-bb19-d14dfafafe43.gif)
+
+![ar2](https://user-images.githubusercontent.com/72239958/183279919-6fd584ec-95d5-4a90-b1b9-e25659e4c34a.gif)
+
 
 While the MoveIt is running, the real-world arm can be controlled through Plan panel in RViz.
