@@ -1,6 +1,6 @@
 ar2_arm:
   hardware_interface:
-    loop_hz: 20 # hz
+    loop_hz: 30 # hz
     joints:
       - joint_1
       - joint_2
