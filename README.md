@@ -18,7 +18,7 @@ A bridge between Arduino controller and MoveIt. It follows the architect of ros_
 Communication between arm hardware interface and Arduino Mega2560 relies on rosserial, please make sure it is installed.
 
 ```
-sudo apt install ros-melodic-serial
+sudo apt install ros-<ros_distro>-serial
 sudo apt install ros-<ros_distro>-rosserial
 sudo apt install ros-<ros_distro>-rosserial-arduino
 sudo apt install ros-<ros_distro>-rosserial-server
