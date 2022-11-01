@@ -1,6 +1,6 @@
 ar2_arm:
   hardware_interface:
-    loop_hz: 30 # hz
+    loop_hz: 20 # hz
     joints:
       - joint_1
       - joint_2
@@ -24,3 +24,4 @@ ar2_arm:
     serial:
       port: '/dev/ttyACM0'
       baudrate: 115200
+
