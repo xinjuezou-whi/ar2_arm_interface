@@ -92,6 +92,7 @@ namespace whi_arm_hardware_interface
                 {
                     auto serialInst = std::make_shared<serial::Serial>(port, baudrate, serial::Timeout::simpleTimeout(500));
                     drivers_map_.emplace(name_, std::make_unique<DriverSerial>(name_, serialInst));
+                    ((DriverSerial*)drivers_map_[name_].get())->setMotor(limits_dir_);
                 }
                 catch (serial::IOException& e)
                 {
