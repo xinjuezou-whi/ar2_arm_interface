@@ -231,6 +231,9 @@ namespace whi_arm_hardware_interface
                     {
                         joint_position_[i] = angles::from_degrees(forward_dir_[i] * std::stoi(State.substr(begin + 1, end - begin - 1)) / steps_per_deg_[i]);
                         begin = end;
+#ifdef DEBUG
+                        std::cout << "pose of joint " << i << " " << angles::to_degrees(joint_position_[i]) << std::endl;
+#endif
                     }
                 }
             }
