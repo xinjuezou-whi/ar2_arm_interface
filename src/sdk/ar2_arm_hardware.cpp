@@ -212,10 +212,12 @@ namespace whi_arm_hardware_interface
         if (State.find("homing") != std::string::npos)
         {
             homing_state_ = STA_HOMING;
+            std::cout << "start to homing..." << std::endl;
         }
         else if (State.find("homed") != std::string::npos)
         {
             homing_state_ = STA_HOMED;
+            std::cout << "homed successfully" << std::endl;
         }
         else if (State.find("p") != std::string::npos)
         {
