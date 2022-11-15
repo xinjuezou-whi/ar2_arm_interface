@@ -27,7 +27,7 @@ ar2_arm:
           trajectory: 0.5
           goal: 0.02
         joint_5:
-          trajectory: 1.2 #1.5
+          trajectory: 1.4 #1.5
           goal: 0.7 #0.8
         joint_6:
           trajectory: 0.5
