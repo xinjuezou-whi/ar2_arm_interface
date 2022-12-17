@@ -109,7 +109,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-  LIBRARIES whi_arm_hardware
+  LIBRARIES ar2_arm_hardware
 #  CATKIN_DEPENDS control_msgs controller_manager hardware_interface joint_limits_interface ros_controllers roscpp std_msgs transmission_interface
 #  DEPENDS system_lib
 )
@@ -129,9 +129,9 @@ include_directories(
 FILE(GLOB WHI_SDK_SRC
  "src/sdk/*.cpp"
 )
-add_library(whi_arm_hardware ${WHI_SDK_SRC})
+add_library(ar2_arm_hardware ${WHI_SDK_SRC})
 
-target_link_libraries(whi_arm_hardware
+target_link_libraries(ar2_arm_hardware
    ${catkin_LIBRARIES}
 )
 
@@ -154,11 +154,11 @@ add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}_node whi_arm_hardware)
+add_dependencies(${PROJECT_NAME}_node ar2_arm_hardware)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
-  whi_arm_hardware
+  ar2_arm_hardware
   ${catkin_LIBRARIES}
   boost_system
 )
