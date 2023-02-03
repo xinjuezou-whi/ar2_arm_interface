@@ -30,6 +30,9 @@ class RotaryEncoderSerial;
 class DriverSerial : public DriverBase
 {
 public:
+	using ResponseFunc = std::function<void(const std::string& State)>;
+
+public:
 	DriverSerial() = delete;
 	DriverSerial(const std::string& JointName, const char* Device, unsigned int Baudrate = 9600);
 	DriverSerial(const std::string& JointName, std::shared_ptr<serial::Serial> Serial);
@@ -47,6 +50,7 @@ public:
 	// specific
 	void setMotor(const std::vector<int>& LimitsDir);
 	void setEncoder(unsigned int Resolution);
+	void registerResponse(ResponseFunc Func);
 
 protected:
 	void fetchData(unsigned char* Data, size_t Length);
@@ -63,5 +67,5 @@ protected:
 	std::shared_ptr<RotaryEncoderBase> encoder_{ nullptr };
 	std::thread th_read_;
 	std::atomic_bool terminated_{ false };
-	long pre_encoder_{ 0 };
+	ResponseFunc responseCallback_{ nullptr };
 };

@@ -60,7 +60,7 @@ void DriverSerial::actuate(std::string Command)
 {
 	if (serial_inst_)
 	{
-		serial_inst_->write(Command);
+		serial_inst_->write(Command + "\n");
 	}
 }
 
@@ -90,6 +90,11 @@ void DriverSerial::setEncoder(unsigned int Resolution)
 
 }
 
+void DriverSerial::registerResponse(ResponseFunc Func)
+{
+	responseCallback_ = Func;
+}
+
 void DriverSerial::fetchData(unsigned char* Data, size_t Length)
 {
 
@@ -114,11 +119,17 @@ void DriverSerial::threadReadSerial()
 		{
 			unsigned char rbuff[count];
 			size_t readNum = serial_inst_->read(rbuff, count);
-			for (size_t i = 0; i < std::min(count, readNum); ++i)
+			if (responseCallback_)
+			{
+				responseCallback_(std::string((const char*)rbuff));
+			}
+#ifdef DEBUG
+			for (int i = 0; i < count; ++i)
 			{
 				std::cout << rbuff[i];
 			}
 			std::cout << std::endl;
+#endif
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -77,7 +77,8 @@ namespace whi_arm_hardware_interface
             node_handle_->param("/ar2_arm/hardware_interface/rosserial/topic", topic, std::string("/arm_hardware_interface"));
             drivers_map_.emplace(name_, std::make_unique<DriverRosserial>(name_, node_handle_, topic));
             ((DriverRosserial*)drivers_map_[name_].get())->setMotor(limits_dir_);
-            ((DriverRosserial*)drivers_map_[name_].get())->registerResponse(std::bind(&Ar2HardwareInterface::callbackResponse, this, std::placeholders::_1));
+            ((DriverRosserial*)drivers_map_[name_].get())->registerResponse(
+                std::bind(&Ar2HardwareInterface::callbackResponse, this, std::placeholders::_1));
         }
         else if (hardwareStr == hardware[SERIAL])
         {
@@ -93,6 +94,8 @@ namespace whi_arm_hardware_interface
                     auto serialInst = std::make_shared<serial::Serial>(port, baudrate, serial::Timeout::simpleTimeout(500));
                     drivers_map_.emplace(name_, std::make_unique<DriverSerial>(name_, serialInst));
                     ((DriverSerial*)drivers_map_[name_].get())->setMotor(limits_dir_);
+                    ((DriverSerial*)drivers_map_[name_].get())->registerResponse(
+                        std::bind(&Ar2HardwareInterface::callbackResponse, this, std::placeholders::_1));
                 }
                 catch (serial::IOException& e)
                 {
@@ -212,31 +215,35 @@ namespace whi_arm_hardware_interface
         if (State.find("homing") != std::string::npos)
         {
             homing_state_ = STA_HOMING;
-            std::cout << "start to homing..." << std::endl;
+			std::cout << "start to homing..." << std::endl;
         }
         else if (State.find("homed") != std::string::npos)
         {
             homing_state_ = STA_HOMED;
-            std::cout << "homed successfully" << std::endl;
+			std::cout << "homed successfully" << std::endl;
         }
         else if (State.find("p") != std::string::npos)
         {
             if (mode_close_loop_)
             {
-                std::size_t begin = 0;
-                std::size_t end = 0;
-                for (std::size_t i = 0; i < joint_position_.size(); ++i)
+                try
                 {
-                    begin = State.find('p', begin);
-                    end = State.find('p', begin + 1);
-                    if (end > begin)
+                    std::size_t begin = 0;
+                    std::size_t end = 0;
+                    for (std::size_t i = 0; i < joint_position_.size(); ++i)
                     {
-                        joint_position_[i] = angles::from_degrees(forward_dir_[i] * std::stoi(State.substr(begin + 1, end - begin - 1)) / steps_per_deg_[i]);
-                        begin = end;
-#ifdef DEBUG
-                        std::cout << "pose of joint " << i << " " << angles::to_degrees(joint_position_[i]) << std::endl;
-#endif
+                        begin = State.find('p', begin);
+                        end = State.find('p', begin + 1);
+                        if (end > begin)
+                        {
+                            joint_position_[i] = angles::from_degrees(forward_dir_[i] * std::stoi(State.substr(begin + 1, end - begin - 1)) / steps_per_deg_[i]);
+                            begin = end;
+                        }
                     }
+                }
+                catch (const std::exception& e)
+                {
+                    std::cout << "tranferred data exception" << std::endl;
                 }
             }
         }
