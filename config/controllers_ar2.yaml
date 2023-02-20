@@ -16,19 +16,19 @@ ar2_arm:
         goal_time: 0.5
         joint_1:
           trajectory: 0.5
-          goal: 0.3 #0.4
+          goal: 0.5
         joint_2:
-          trajectory: 1.0 #1.0
-          goal: 0.6 #0.65
+          trajectory: 1.0
+          goal: 0.6
         joint_3:
-          trajectory: 1.5 #1.5
-          goal: 1.0 #1.0
+          trajectory: 1.5
+          goal: 1.0
         joint_4:
-          trajectory: 0.5
-          goal: 0.02
+          trajectory: 1.0
+          goal: 0.5
         joint_5:
-          trajectory: 1.4 #1.5
-          goal: 0.7 #0.8
+          trajectory: 1.5
+          goal: 0.8
         joint_6:
-          trajectory: 0.5
-          goal: 0.25 #0.2
+          trajectory: 1.0
+          goal: 0.25
