@@ -33,7 +33,7 @@ namespace whi_arm_hardware_interface
 	class ArmHardware : public hardware_interface::RobotHW
 	{
 	public:
-		enum Hardware { I2C = 0, CAN_BUS, SERIAL, ROSSERIAL, HARDWARE_SUM };
+		enum Hardware { I2C = 0, CAN_BUS, SERIAL, ROSSERIAL, SOCKET, HARDWARE_SUM };
 		static const char* hardware[HARDWARE_SUM];
 
 	public:
@@ -47,10 +47,11 @@ namespace whi_arm_hardware_interface
 		ros::Duration elapsed_time_;
 		double loop_hz_{ 10.0 };
 
-		/// interfaces
+		/// joint state interface
 		hardware_interface::JointStateInterface joint_state_interface_;
+		/// joint command interface: position
 		hardware_interface::PositionJointInterface position_joint_interface_;
-
+		/// joint limit interfaces
 		joint_limits_interface::PositionJointSaturationInterface position_joint_saturation_interface_;
 		joint_limits_interface::PositionJointSoftLimitsInterface position_joint_limits_interface_;
 

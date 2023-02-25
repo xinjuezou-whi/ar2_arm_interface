@@ -39,7 +39,7 @@ namespace whi_arm_hardware_interface
         nh_private.param("close_loop", mode_close_loop_, true);
 
         // joints
-        node_handle_->getParam("/ar2_arm/hardware_interface/joints", joint_names_);
+        node_handle_->getParam("/ar2_arm/controllers/command/joints", joint_names_);
         if (joint_names_.size() == 0)
         {
             // especially for rosrun mode
@@ -128,7 +128,7 @@ namespace whi_arm_hardware_interface
             JointStateHandle jointStateHandle(joint_names_[i], &joint_position_[i], &joint_velocity_[i], &joint_effort_[i]);
             joint_state_interface_.registerHandle(jointStateHandle);
 
-            // create velocity joint interface
+            // create joint command interface: position
             JointHandle jointPositionHandle(jointStateHandle, &joint_position_command_[i]);
             position_joint_interface_.registerHandle(jointPositionHandle);
         }

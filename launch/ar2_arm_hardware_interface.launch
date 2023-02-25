@@ -34,5 +34,5 @@
   <!-- Start controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/" 
         args="/ar2_arm/controllers/state
-	          /ar2_arm/controllers/position"/>
+              /ar2_arm/controllers/command"/>
 </launch>
